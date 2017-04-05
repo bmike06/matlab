@@ -28,7 +28,7 @@ function cubeObject = plotCube(tracklet,frame)
     nbPoses = size(tracklet.poses);
     nbPoses = nbPoses(1,2);
     firstFrame = tracklet.first_frame;
-    poseIndex = frame - firstFrame   + 1;
+    poseIndex = frame - firstFrame + 1; 
     poseInfo = tracklet.poses(:,poseIndex);
        % 1,'tx'
        % 2,'ty'

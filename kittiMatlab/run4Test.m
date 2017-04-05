@@ -1,15 +1,38 @@
-function run4Test ()
+function run4Test (dataBaseFolder,varargin)
 
 
+LoopInf = 0;
+enableTracklet = 0;
+enOxts = 0;
+%Variable Argument
+fprintf(['Number of arguments: %d\n' nargin])
+nVarargs = length(varargin)
+fprintf('Inputs in varargin(%d):\n',nVarargs)
+for k = 1:nVarargs
+    fprintf('   %s %d\n', varargin{k}{1} , varargin{k}{2})
+    if strcmp(varargin{k}{1},'loop')
+        LoopInf = varargin{k}{2};
+    end
+    if strcmp(varargin{k}{1},'enTracklet')
+       enableTracklet = varargin{k}{2};
+    end  
+    if strcmp(varargin{k}{1},'enOxts')
+       enOxts = varargin{k}{2};
+    end  
+    
+    
+end
+
+
+%main Folder
 %global parameter
-dataFolder = 'C:\kitti_Database\2011_09_26\2011_09_26_drive_0048_sync\';
-dataFolder = 'C:\kitti_Database\simuTest\';
-listLidarFileBin=dir(fullfile(strcat(dataFolder,'/velodyne_points/data/'),'*.bin'))
-listLidarFileTxt=dir(fullfile(strcat(dataFolder,'/velodyne_points/data/'),'*.txt'))
-
+rootFolder = dataBaseFolder{1};
+lidarFolder = strcat(rootFolder,'/velodyne_points/data/');
+trackletsFolder = rootFolder;
+listLidarFileBin=dir(fullfile(strcat(lidarFolder,'*.bin')));
+listLidarFileTxt=dir(fullfile(strcat(lidarFolder,'*.txt')));
 listBin = size(listLidarFileBin);
 listBin = listBin(1,1);
-
 if listBin==0
    listLidarFile= listLidarFileTxt
 else 
@@ -18,21 +41,24 @@ end
 nbFrame = size(listLidarFile);
 nbFrame = nbFrame(1,1);
 
-%oxtsFile = strcat(dataFolder,'oxts/data/',fileName,'.txt');
-trackletsFile = strcat(dataFolder,'tracklet_labels.xml');
-%velo2cam = strcat(dataFolder,'calib_velo_to_cam.txt');
-%cam2cam = strcat(dataFolder,'calib_cam_to_cam.txt');
+if enableTracklet==1
+    trackletsFile = strcat(rootFolder,'tracklet_labels.xml');
+    fprintf('Load %s /n',trackletsFile);
+    tracklets = readTracklets(trackletsFile);
+end
 
-%load data
-%tracklets = readTracklets(trackletsFile);
+if enOxts==1
+    oxtsFile = strcat(rootFolder,'oxts/data/',fileName,'.txt');
+end
+
+
+%load lidar data
+%
 fullLidarData=cell(nbFrame,1);
-   
 for i=1:nbFrame
-    %fileName=sprintf('%.10d\n',(i-1));
-    %fileName=listLidarFile(i).name
-    fileName=sprintf('%d',i);
-    fileName=strcat('frame_',fileName,'.txt');
-    lidarFile = strcat(dataFolder,'velodyne_points/data/',fileName)  
+    fileName=listLidarFile(i).name;
+    lidarFile = strcat(rootFolder,'velodyne_points/data/',fileName);
+    fprintf('Load %s /n',lidarFile);
     fullLidarData{i}=loadLidarData(listBin,lidarFile);
 end
 %oxdsData = loadOxts(oxtsFile);
@@ -50,20 +76,30 @@ fclose('all')
     hold on; 
    
     i=1;
-    while(1)
+    endLoop=1;
+    while(endLoop  )
         currentFrame = i - 1;
         origin = plot3(0,0,0,'.','MarkerSize',25,'Color',[1 0 0]);
         lidarGraph =  plotLidar(fullLidarData{i},[0 0 0],[1 1 1]);
-        %objectGraph = plotTracklets(tracklets,currentFrame)
+        if enableTracklet==1
+            objectGraph = plotTracklets(tracklets,currentFrame);
+        end
         title(currentFrame);    
         pause(1);
-        delete(origin)
-        delete(lidarGraph)
-        %for z = 1 : length(objectGraph)
-        %    delete(objectGraph{z});
-        %end
-        i=i+1
+        delete(origin);
+        delete(lidarGraph);
+        if enableTracklet==1
+        for z = 1 : length(objectGraph)
+            delete(objectGraph{z});
+        end
+        end
+        i=i+1;
         if i>nbFrame-1
             i = 1;
+        end
+        if i ==1 
+            if LoopInf==0
+                endLoop=0;
+            end
         end
     end
