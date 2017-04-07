@@ -4,9 +4,9 @@ function [lidarData] = loadLidarData(type,file)
     if type==0
         lidarData=load(file);
         lidarData = (round(lidarData*quantizationStep))/quantizationStep;
-        tmp=lidarData(:,1);
-        lidarData(:,1)=lidarData(:,2);
-        lidarData(:,2)=tmp;
+        %tmp=lidarData(:,1);
+        %lidarData(:,1)=lidarData(:,2);
+        %lidarData(:,2)=tmp;
         lidarData=transpose(lidarData);      
     else
         fid = fopen(file,'r');

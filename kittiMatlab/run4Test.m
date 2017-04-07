@@ -58,10 +58,9 @@ fullLidarData=cell(nbFrame,1);
 for i=1:nbFrame
     fileName=listLidarFile(i).name;
     lidarFile = strcat(rootFolder,'velodyne_points/data/',fileName);
-    fprintf('Load %s /n',lidarFile);
+    fprintf('Load %s \n',lidarFile);
     fullLidarData{i}=loadLidarData(listBin,lidarFile);
 end
-%oxdsData = loadOxts(oxtsFile);
 %figure
 fclose('all')
     f = figure();  

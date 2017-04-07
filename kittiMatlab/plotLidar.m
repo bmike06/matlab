@@ -12,5 +12,6 @@ function [object] = plotLidar(lidarData,offset,flip)
 
     r=lidarData(4,:);
     object = plot3(x,y,z,'.','MarkerSize',1000/quantizationStep/min(viewSpan,100),'Color',rgbHue);
+    %object=trisurf(x,y,z,'.','MarkerSize',1000/quantizationStep/min(viewSpan,100),'Color',rgbHue);
     
 end
